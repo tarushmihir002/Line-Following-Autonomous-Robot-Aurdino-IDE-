@@ -1,0 +1,175 @@
+#define ml1 6
+#define ml2 5
+#define mr1 10
+#define mr2 9
+
+#define echo 2
+#define trig 3
+
+#define leftsensor A0
+#define centresensor A1
+#define rightsensor A3
+#define erightsensor A4
+#define eleftsensor A5
+#define wsensor A2
+
+long int duration;
+float distance;
+
+void setup() {
+  // put your setup code here, to run once:
+  pinMode(mr1,OUTPUT);
+  pinMode(mr2,OUTPUT);
+  pinMode(ml1,OUTPUT);
+  pinMode(ml2,OUTPUT);
+  Serial.begin(9600);
+  pinMode(trig,OUTPUT);
+  pinMode(echo,INPUT);
+  pinMode(leftsensor,INPUT);
+  pinMode(rightsensor,INPUT);
+  pinMode(centresensor,INPUT);
+  pinMode(erightsensor,INPUT);
+  pinMode(eleftsensor,INPUT);
+  pinMode(wsensor,INPUT);
+}
+
+void loop() {
+  // put your main code here, to run repeatedly:
+
+  Serial.print(digitalRead(A4));
+  Serial.print("  ");
+  Serial.print(digitalRead(A3));
+  Serial.print("  ");
+  Serial.print(digitalRead(A1));
+  Serial.print("  ");
+  Serial.print(digitalRead(A5));
+  Serial.print("  ");
+  Serial.println(digitalRead(A0));
+  Serial.println(digitalRead(A2));
+
+    long dist=calculatedistance();
+    Serial.print("Distance: ");
+    Serial.println(dist);
+
+ int l1,l2,l3,l4,l5;
+  l2=digitalRead(leftsensor);
+  l3=digitalRead(centresensor);
+  l4=digitalRead(rightsensor);
+  l5=digitalRead(erightsensor);
+  l1=digitalRead(eleftsensor);
+ 
+  if(l1==0 && l2==0 && l3==1 && l4==0 && l5==0)
+  {
+  analogWrite(mr1,100);
+  analogWrite(mr2,LOW);
+  analogWrite(ml1,100);
+  analogWrite(ml2,LOW);
+  }
+  if(l1==0 && l2==1 && l3==1 && l4==0 && l5==0 || l1==0 && l2==1 && l3==0 && l4==0 && l5==0)
+  {
+  analogWrite(mr1,100);
+  analogWrite(mr2,LOW);
+  analogWrite(ml1,20);
+  analogWrite(ml2,LOW);
+  }
+  if(l1==0 && l2==0 && l3==1 && l4==1 && l5==0 || l1==0 && l2==0 && l3==0 && l4==1 && l5==0)
+  {
+  analogWrite(mr1,20);
+  analogWrite(mr2,LOW);
+  analogWrite(ml1,100);
+  analogWrite(ml2,LOW);
+  }
+  if(l1==1 && l2==1 && l3==1 && l4==0 && l5==0)
+  {
+    analogWrite(mr1,100);
+    analogWrite(mr2,LOW);
+    analogWrite(ml1,LOW);
+    analogWrite(ml2,LOW);
+  }
+  if(l1==0 && l2==0 && l3==1 && l4==1 && l5==1)
+    {
+    analogWrite(mr1,LOW);
+    analogWrite(mr2,LOW);
+    analogWrite(ml1,100);
+    analogWrite(ml2,LOW);
+    }
+  if(l1==1 && l2==1 && l3==1 && l4==1 && l5==1)
+  {
+    analogWrite(mr1,100);
+    analogWrite(mr2,LOW);
+    analogWrite(ml1,100);
+    analogWrite(ml2,LOW);
+    followWall();
+  }
+}
+
+void followWall()
+{
+  while(1)
+  {
+      int l6;
+    l6=digitalRead(wsensor);
+    long dist=calculatedistance();
+    if (l6==0)
+    {
+    analogWrite(mr1,LOW);
+    analogWrite(mr2,LOW);
+    analogWrite(ml1,120);
+    analogWrite(ml2,LOW);
+    }
+    else
+    {
+    if (dist >= 10 && dist <= 15)
+    {
+    analogWrite(mr1,80);
+    analogWrite(mr2,LOW);
+    analogWrite(ml1,80);
+    analogWrite(ml2,LOW);
+    }
+    if (dist <10)
+    {
+    analogWrite(mr1,50);
+    analogWrite(mr2,LOW);
+    analogWrite(ml1,80);
+    analogWrite(ml2,LOW);
+    }
+    if (dist >15 && dist <30)
+    {
+    analogWrite(mr1,80);
+    analogWrite(mr2,LOW);
+    analogWrite(ml1,50);
+    analogWrite(ml2,LOW);
+    }
+    if (dist >100)
+    {
+    analogWrite(mr1,120);
+    analogWrite(mr2,LOW);
+    analogWrite(ml1,LOW);
+    analogWrite(ml2,LOW);
+    }
+    int l1,l2,l3,l4,l5;
+    if (l1==1 && l2==1 && l3==1 && l4==1 && l5==1)
+    {
+    analogWrite(mr1,LOW);
+    analogWrite(mr2,LOW);
+    analogWrite(ml1,LOW);
+    analogWrite(ml2,LOW);
+    delay(100000);
+    }
+    }
+  }
+}
+long calculatedistance()
+{
+  digitalWrite(trig,HIGH);
+  delayMicroseconds(10);
+  digitalWrite(trig,LOW);
+
+  duration = pulseIn(echo,HIGH);
+  distance = duration*0.034/2;
+  return distance;
+}
+ 
+
+
+
